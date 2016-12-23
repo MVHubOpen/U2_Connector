@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using U2.Data.Client;
 using U2.Data.Client.UO;
 
@@ -7,11 +6,6 @@ namespace mvHub
 {
     public class UniVerseDataConnector : ImvDataConnector
     {
-        public UniVerseDataConnector() : base()
-        {
-
-        }
-
         public override MvSession GetSession(string subroutine = null, string usernameOverride = null, string passwordOverride = null)
         {
             var session = new UniVerseSession(this, subroutine, usernameOverride, passwordOverride);
@@ -39,10 +33,10 @@ namespace mvHub
             {
                 ConnectionString = new U2ConnectionStringBuilder
                 {
-                    UserID = this.User,
-                    Password = this.Password,
-                    Server = this.Hostname,
-                    Database = this.Account,
+                    UserID = User,
+                    Password = Password,
+                    Server = Hostname,
+                    Database = Account,
                     AccessMode = "Native",
                     SessionIDAsIPAddress = true,
                     RpcServiceType = "uvcs",
@@ -59,28 +53,28 @@ namespace mvHub
             dbSession.ReleaseStrategy = UniObjectsTokens.UVT_READ_RELEASE;
             dbSession.Timeout = 6000;
 
-            var dbSub = dbSession.CreateUniSubroutine(this.Subroutine+".HANDLER.SUB",4);
-            dbSub.SetArg(0, this.RequestHeader);
-            dbSub.SetArg(1, this.RequestBody);
+            var dbSub = dbSession.CreateUniSubroutine(Subroutine+".HANDLER.SUB",4);
+            dbSub.SetArg(0, RequestHeader);
+            dbSub.SetArg(1, RequestBody);
             try
             {
                 dbSub.Call();
 
             }
-            catch (U2.Data.Client.UO.UniSubroutineException uEx)
+            catch (UniSubroutineException uEx)
             {
-                throw new mvHub.MvHubSubroutineException("Error Call Subroutine", uEx);
+                throw new MvHubSubroutineException("Error Call Subroutine", uEx);
 
             }
             catch (Exception ex)
             {
 
-                throw new mvHub.MvHubSubroutineException("Error Call Subroutine", ex);
+                throw new MvHubSubroutineException("Error Call Subroutine", ex);
             }
             finally
             {
-                this.ReplyHeader = dbSub.GetArg(2);
-                this.ReplyBody = dbSub.GetArg(3);
+                ReplyHeader = dbSub.GetArg(2);
+                ReplyBody = dbSub.GetArg(3);
                 con.Close();
 
             }
