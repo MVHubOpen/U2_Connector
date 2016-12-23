@@ -6,7 +6,8 @@ namespace mvHub
 {
     public class UniVerseDataConnector : ImvDataConnector
     {
-        public override MvSession GetSession(string subroutine = null, string usernameOverride = null, string passwordOverride = null)
+        public override MvSession GetSession(string subroutine = null, string usernameOverride = null,
+            string passwordOverride = null)
         {
             var session = new UniVerseSession(this, subroutine, usernameOverride, passwordOverride);
             return session;
@@ -19,16 +20,13 @@ namespace mvHub
             string subroutine,
             string usernameOverride,
             string passwordOverride) :
-            base(assignParentConnector, subroutine, usernameOverride, passwordOverride)
+                base(assignParentConnector, subroutine, usernameOverride, passwordOverride)
         {
-
-
         }
 
 
         public override bool Call()
         {
-
             var con = new U2Connection
             {
                 ConnectionString = new U2ConnectionStringBuilder
@@ -53,22 +51,19 @@ namespace mvHub
             dbSession.ReleaseStrategy = UniObjectsTokens.UVT_READ_RELEASE;
             dbSession.Timeout = 6000;
 
-            var dbSub = dbSession.CreateUniSubroutine(Subroutine+".HANDLER.SUB",4);
+            var dbSub = dbSession.CreateUniSubroutine(Subroutine + ".HANDLER.SUB", 4);
             dbSub.SetArg(0, RequestHeader);
             dbSub.SetArg(1, RequestBody);
             try
             {
                 dbSub.Call();
-
             }
             catch (UniSubroutineException uEx)
             {
                 throw new MvHubSubroutineException("Error Call Subroutine", uEx);
-
             }
             catch (Exception ex)
             {
-
                 throw new MvHubSubroutineException("Error Call Subroutine", ex);
             }
             finally
@@ -76,10 +71,8 @@ namespace mvHub
                 ReplyHeader = dbSub.GetArg(2);
                 ReplyBody = dbSub.GetArg(3);
                 con.Close();
-
             }
             return true;
-
         }
 
         public override void Close()
@@ -89,6 +82,5 @@ namespace mvHub
         public override void Dispose()
         {
         }
-
     }
 }
